@@ -1,3 +1,4 @@
+//Darkmode functionality begins here.
 const lightsOff = document.querySelector(".lights-off");
 const lightsOn = document.querySelector(".lights-on");
 const theme = document.querySelector("#theme-link");
@@ -14,169 +15,324 @@ lightsOn.addEventListener("click", function() {
   }
 });
 
-function buttonClick(value) {
-  if (isNaN(parseInt(value))) {
-    handleSymbol(value)
-  } else {
-    handleNumber(value)
+//Darkmode funtionality ends here
+
+
+
+
+let input = document.getElementById("input");
+let history = document.getElementById("history");
+let clear = document.getElementById("C");
+let clearE = document.getElementById("CE");
+let digits = document.getElementsByClassName("digit");
+let operators = document.getElementsByClassName("operator");
+let plusmn = document.getElementById("plusmn");
+let equals = document.getElementById("equals");
+let decimal = document.getElementById("decimal");
+
+for (let d of digits) {
+  d.addEventListener("click", pressDigit);
+}
+
+for (let o of operators) {
+  o.addEventListener("click", pressOperator);
+}
+
+clear.addEventListener("click", pressClear);
+clearE.addEventListener("click", pressBackspace);
+plusmn.addEventListener("click", pressPlusmn);
+equals.addEventListener("click", pressEquals);
+decimal.addEventListener("click", pressDecimal);
+
+document.addEventListener("keydown", keydown);
+
+function keydown(e) {
+  if (!isNaN(e.key)) {
+    pressDigit(e.key.toString());
+    return;
+  }
+  switch (e.key) {
+    case "c":
+      pressClear();
+      break;
+    case "Backspace":
+      pressBackspace();
+      break;
+    case ".":
+      pressDecimal();
+      break;
+    case "Enter":
+    case "=":
+      pressEquals();
+      break;
+    case "+":
+      pressOperator("+");
+      break;
+    case "-":
+      pressOperator("-");
+      break;
+    case "*":
+      pressOperator("\xD7");
+      break;
+    case "/":
+      pressOperator("\xF7");
+      break;
+    case "%":
+      pressOperator("%");
+      break;
   }
 }
 
-function handleNumber(number) {
- if (buffer === `0`) {
-  buffer = number
- } else {
-  buffer += number
-  console.log(buffer)
- }
+function pressDigit(e) {
+  let digit;
+  if (typeof e === "string") {
+    digit = e;
+  } else {
+    digit = e.target.innerText;
+  }
+
+  //if operator was pressed last, reset input
+  if (isHistoryOperator(history.innerText.length - 1) && input.innerText !== "-") {
+    input.innerText = "";
+  }
+
+  if (equalsPressed()) {
+    history.innerText = digit;
+    input.innerText = digit;
+  } else if (isHistoryTooLong() || isInputTooLong()) {
+    return;
+  } else if (input.innerText === "0" || input.innerText === "-0") {
+    history.innerText = history.innerText.slice(0, history.innerText.length - 1) + digit;
+    if (input.innerText === "0") {
+      input.innerText = digit;
+    } else {
+      input.innerText = "-" + digit;
+    }
+  } else {
+    history.innerText += digit;
+    input.innerText += digit;
+  }
 }
 
-function handleSymbol(symbol) {
-console.log(`symbol`)
-}
-function init1() {
-  document
-    .querySelector(`.button1`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
+function pressDecimal() {
+  if (equalsPressed() || input.innerText === "") {
+    history.innerText = "0.";
+    input.innerText = "0.";
+    return;
+  }
+  //if operator was pressed last, reset input
+  if (isHistoryOperator(history.innerText.length - 1) && input.innerText !== "-") {
+    input.innerText = "";
+  }
+
+  if (isHistoryTooLong() || isInputTooLong() || input.innerText.includes(".")) {
+    return;
+  } else if (isHistoryOperator(history.innerText.length - 1)) {
+    history.innerText += "0.";
+    input.innerText += "0.";
+  } else if (history.innerText[history.innerText.length - 1] !== ".") {
+    history.innerText += ".";
+    input.innerText += ".";
+  }
 }
 
-function init2() {
-  document
-    .querySelector(`.button2`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
+function pressOperator(e) {
+  //if history is empty, or two operators have been hit, return
+  let operator = e;
+  if (e === "-" && (isHistoryOperator(history.innerText.length - 1) || history.innerText === "")) {
+    pressPlusmn();
+    return;
+  }
+  if (
+    history.innerText === "" ||
+    input.innerText.search(/[a-z><]/gi) !== -1 ||
+    (isHistoryOperator(history.innerText.length - 1) && isHistoryOperator(history.innerText.length - 2))
+  ) {
+    return;
+  }
+  if (typeof e === "string") {
+    operator = e;
+  } else {
+    operator = e.target.innerText;
+  }
+
+  if (equalsPressed()) {
+    history.innerText = input.innerText + operator;
+  } else if (isHistoryTooLong()) {
+    return;
+  } else if (isHistoryOperator(history.innerText.length - 1)) {
+    history.innerText = history.innerText.slice(0, history.innerText.length - 1) + operator;
+  } else {
+    history.innerText += operator;
+  }
 }
 
-function init3() {
-  document
-    .querySelector(`.button3`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
+function pressClear() {
+  input.innerText = "";
+  history.innerText = "";
 }
-function init4() {
-  document
-    .querySelector(`.button4`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function init5() {
-  document
-    .querySelector(`.button5`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function init6() {
-  document
-    .querySelector(`.button6`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function init7() {
-  document
-    .querySelector(`.button7`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function init8() {
-  document
-    .querySelector(`.button8`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function init9() {
-  document
-    .querySelector(`.button9`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function init0() {
-  document
-    .querySelector(`.button0`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function initminus() {
-  document
-    .querySelector(`.minus`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function initplus() {
-  document
-    .querySelector(`.plus`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function initmultiply() {
-  document
-    .querySelector(`.multiply`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function initdivide() {
-  document
-    .querySelector(`.divide`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function initpercentage() {
-  document
-    .querySelector(`.percentage`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function initplusminus() {
-  document
-    .querySelector(`.plusminus`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function initAC() {
-  document
-    .querySelector(`.allclear`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function initequals() {
-  document
-    .querySelector(`.equals`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function initperiod() {
-  document
-    .querySelector(`.period`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-function initbackspace() {
-  document
-    .querySelector(`.backspace`)
-    .addEventListener(`click`, function(event) {
-    buttonClick(event.target.innerText)
-  })
-}
-init1(); init2(); init3(); init4(); init5(); init6(); init7(); init8(); init9(); init0()
-initdivide(); initpercentage(); initminus(); initmultiply();
-initAC(); initequals(); initperiod(); initplus(); initplusminus(); initbackspace();
 
+function pressBackspace() {
+  if (history.innerText.search(/[a-z><]/gi) !== -1) {
+    input.innerText = "";
+    history.innerText = "";
+    return;
+  }
+  if (history.innerText === "") {
+    return;
+  }
+  //if operator was not pressed, delete last number from input
+  if ((!isHistoryOperator(history.innerText.length - 1) || input.innerText === "-") && !equalsPressed()) {
+    input.innerText = input.innerText.slice(0, input.innerText.length - 1);
+  } else {
+    input.innerText = lastNoInHistory();
+  }
+
+  history.innerText = history.innerText.slice(0, history.innerText.length - 1);
+}
+
+function pressPlusmn() {
+  if (equalsPressed()) {
+    input.innerText = "-";
+    history.innerText = "-";
+  } else if (isHistoryTooLong() || isInputTooLong()) {
+    return;
+  } else if (history.innerText === "-") {
+    input.innerText = "";
+    history.innerText = "";
+  } else if (isHistoryOperator(history.innerText.length - 1) && !isHistoryOperator(history.innerText.length - 2)) {
+    input.innerText = "-";
+    history.innerText += "-";
+  } else if (!input.innerText.includes("-")) {
+    let hindex = history.innerText.lastIndexOf(input.innerText);
+    input.innerText = "-" + input.innerText;
+    history.innerText = history.innerText.slice(0, hindex) + input.innerText;
+  } else {
+    let hindex = history.innerText.lastIndexOf(input.innerText);
+    input.innerText = input.innerText.slice(1);
+    history.innerText = history.innerText.slice(0, hindex) + input.innerText;
+  }
+}
+
+function pressEquals() {
+  //if equals or an operator was pressed last, or history is empty
+  if (
+    isHistoryOperator(history.innerText.length - 1) ||
+    history.innerText[history.innerText.length - 1] === "=" ||
+    history.innerText === ""
+  ) {
+    return;
+  }
+
+  let numbersArray = history.innerText.split(/[^0-9.]+/g).filter(i => i !== "");
+  numbersArray = numbersArray.map(i => Number(i));
+  let operatorsArray = history.innerText.split(/[0-9.]+/g).filter(op => op !== "");
+
+  if (history.innerText[0] === "-") {
+    //fix arrays if first number is negative
+    numbersArray[0] = -numbersArray[0];
+    operatorsArray.shift();
+  }
+
+  history.innerText += "=";
+  input.innerText = evaluate(numbersArray, operatorsArray).toString();
+}
+
+function evaluate(numbersArray, operatorsArray) {
+  for (let i = 0; i < operatorsArray.length; i++) {
+    if (operatorsArray[i][0] === "\xF7" || operatorsArray[i][0] === "\xD7" || operatorsArray[i][0] === "%") {
+      let evaluation = simpleEval(numbersArray[i], numbersArray[i + 1], operatorsArray[i]);
+      numbersArray.splice(i, 2, evaluation);
+      operatorsArray.splice(i, 1);
+      i--;
+    }
+  }
+
+  for (let i = 0; i < operatorsArray.length; i++) {
+    let evaluation = simpleEval(numbersArray[i], numbersArray[i + 1], operatorsArray[i]);
+    numbersArray.splice(i, 2, evaluation);
+    operatorsArray.splice(i, 1);
+    i--;
+  }
+
+  return output(numbersArray[0]);
+
+  function simpleEval(a, b, operation) {
+    switch (operation) {
+      case "+":
+        return a + b;
+      case "-":
+        return a - b;
+      case "\xF7":
+        return a / b;
+      case "\xD7":
+        return a * b;
+      case "%":
+        return a % b;
+      case "+-":
+        return a - b;
+      case "--":
+        return a + b;
+      case "\xF7-":
+        return a / -b;
+      case "\xD7-":
+        return a * -b;
+      case "%-":
+        return a % -b;
+      default:
+        console.error("Evaluation cannot be completed");
+        return;
+    }
+  }
+
+  function output(n) {
+    if (Math.abs(n) < 1) {
+      return Number(n.toPrecision(8)).toString();
+    } else if (n > 9999999999 && Math.abs(n) !== Infinity) {
+      return ">9999999999";
+    } else if (n < -999999999 && Math.abs(n) !== Infinity) {
+      return "<-999999999";
+    } else if (
+      !Number(n.toPrecision(9))
+        .toString()
+        .includes(".")
+    ) {
+      return Number(n.toPrecision(10)).toString();
+    }
+    return Number(n.toPrecision(9)).toString();
+  }
+}
+function isHistoryOperator(i) {
+  return (
+    history.innerText[i] === "%" ||
+    history.innerText[i] === "+" ||
+    history.innerText[i] === "\xF7" ||
+    history.innerText[i] === "\xD7" ||
+    history.innerText[i] === "-"
+  );
+}
+
+function equalsPressed() {
+  return history.innerText[history.innerText.length - 1] === "=" || history.innerText === "";
+}
+
+function isHistoryTooLong() {
+  return history.innerText.length > 20;
+}
+
+function isInputTooLong() {
+  return input.innerText.length >= 7;
+}
+
+function lastNoInHistory() {
+  let number = history.innerText
+    .split(/[^0-9.]+/g)
+    .filter(i => i !== "")
+    .pop();
+
+  if (history.innerText.endsWith("-" + number, history.innerText.length - 1)) {
+    number = "-" + number;
+  }
+
+  return number;
+}
