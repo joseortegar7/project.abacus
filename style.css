@@ -79,17 +79,24 @@ body {
 
 }
 
-.highlight1 {
+.button.highlight1 {
     color:rgb(98, 235, 189);
 }
 
-.highlight2 {
+.button.highlight2 {
     color:red;
 }
 
 .button:hover {
     background-color: rgb(69, 78, 91);
     color: white;
+}
+
+.button:active {
+    box-shadow: 0 5px 10px rgb(0 0 0 / 0.2);
+    border-style: solid;
+    border: 0.2px;
+    border-color: black ;
 }
 
 .material-symbols-outlined {
