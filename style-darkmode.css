@@ -4,7 +4,10 @@ body {
     padding: 0;
     background-color: #474952;
     justify-content: center;
-    padding: 100px;
+    padding-left: 100px;
+    padding-right: 100px;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 .container-calc {
@@ -32,16 +35,29 @@ body {
     box-shadow: 0 2px 5px rgb(0 0 0 / 0.2);
 }
 
+.screen-history {
+    display: block;
+    color: rgb(150, 150, 150);
+    height: 125rpx;
+    width: 320px;
+    font-size: 40px;
+    font-family: 'Rubik', sans-serif;
+    text-align: right;
+    padding-top: 65px;
+    line-height: 40px;
+    
+}
+
 .screen-buffer {
     display: block;
     color: white;
-    height: 250px;
+    height: 125px;
     width: 320px;
     font-size: 80px;
     font-family: 'Rubik', sans-serif;
     text-align: right;
     padding-top: 0;
-    line-height: 410px;
+    line-height: 140px;
     
 }
 
@@ -110,6 +126,7 @@ body {
   height: 100%;
   width: 100%;
   border-radius: 20px;
+  border: none;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -131,5 +148,6 @@ body {
   }
 .lights-on {
     color: rgb(176, 176, 161);
+    background: none;
     cursor: pointer;
 }
