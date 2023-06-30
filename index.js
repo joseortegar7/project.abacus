@@ -1,17 +1,15 @@
-// Select the button
-const btn = document.querySelector(".darkmode");
-// Select the stylesheet <link>
+const lightsOff = document.querySelector(".lights-off");
+const lightsOn = document.querySelector(".lights-on");
 const theme = document.querySelector("#theme-link");
 
-// Listen for a click on the button
-btn.addEventListener("click", function() {
-  // If the current URL contains "ligh-theme.css"
+lightsOff.addEventListener("click", function() {
   if (theme.getAttribute("href") == "style-lightmode.css") {
-    // ... then switch it to "dark-theme.css"
     theme.href = "style-darkmode.css";
-  // Otherwise...
-  } else {
-    // ... switch it to "light-theme.css"
+  }
+});
+
+lightsOn.addEventListener("click", function() {
+  if (theme.getAttribute("href") == "style-darkmode.css") {
     theme.href = "style-lightmode.css";
   }
 });
