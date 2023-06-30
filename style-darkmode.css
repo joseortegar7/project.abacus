@@ -1,0 +1,129 @@
+body {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    background-color: #474952;
+    justify-content: center;
+    padding: 100px;
+}
+
+.container-calc {
+    display: grid;
+    background-color: #23252c;
+    grid-template-columns: 1fr;
+    width:350px;
+    height: 700px;
+    align-content: center;
+    border-radius: 20px;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+    align-content: space-between;
+    justify-items: center;
+}
+
+.nightmode-switch {
+    display: flex;
+    background-color: #2a2d35;
+    align-items: center;
+    justify-content: space-around;
+    border-radius: 20px;
+    width: 100px;
+    height: 50px;
+    margin-top: 20px;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 0.2);
+}
+
+.screen-buffer {
+    display: block;
+    color: white;
+    height: 250px;
+    width: 320px;
+    font-size: 80px;
+    font-family: 'Rubik', sans-serif;
+    text-align: right;
+    padding-top: 0;
+    line-height: 410px;
+    
+}
+
+.container-buttons {
+    display: grid;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: max-content;
+    justify-items: center;
+    background-color: #2a2d35;
+    line-height: 20px;
+    row-gap: 10px;
+    width: 350px;
+    height: 350px;
+    border-radius: 20px;
+    align-content: space-evenly;
+    padding-top: 10px;
+    padding-bottom: 30px;
+
+}
+
+.button {
+    color: white;
+    background-color: #282b32;
+    height: 55px;
+    width: 55px;
+    border-radius: 15px;
+    border-style: solid;
+    border-color: none;
+    border-width: 0.0;
+    font-size: large;
+    font-weight: bolder;
+    font-family: 'Rubik', sans-serif;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 0.2);
+
+}
+
+.button.highlight1 {
+    color:rgb(98, 235, 189);
+}
+
+.button.highlight2 {
+    color:red;
+}
+
+.button:hover {
+    background-color: rgb(69, 78, 91);
+    color: white;
+    cursor: pointer;
+}
+
+.button:active {
+    box-shadow: 0 5px 10px rgb(0 0 0 / 0.2);
+    border-style: solid;
+    border: 0.2px;
+    border-color: black ;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 48;
+  color: white;
+  height: 100%;
+  width: 100%;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.material-symbols-outlined:hover {
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 48;
+    color: white;
+    background-color: rgb(69, 78, 91);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    cursor: pointer;
+  }
