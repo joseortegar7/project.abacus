@@ -17,29 +17,29 @@
               <button class="material-symbols-outlined lights-on">light_mode</button>
               <button class="material-symbols-outlined lights-off">clear_night</button>
             </div>
-            <div class="screen-history"></div>
-            <div class="screen-buffer">0</div>   
-            <div class="container-buttons">
-                <button class="button highlight1 allclear">AC</button>
-                <button class="button highlight1 plusminus">+/-</button>
-                <button class="button highlight1 percentage">%</button>
-                <button class="button highlight2 divide">÷</button>
-                <button class="button button7">7</button>
-                <button class="button button8">8</button>
-                <button class="button button9">9</button>
-                <button class="button highlight2 multiply">×</button>
-                <button class="button button4">4</button>
-                <button class="button button5">5</button>
-                <button class="button button6">6</button>
-                <button class="button highlight2 minus">-</button>
-                <button class="button button1">1</button>
-                <button class="button button2">2</button>
-                <button class="button button3">3</button>
-                <button class="button highlight2 plus">+</button>
-                <button class="button backspace">←</button>
-                <button class="button button0">0</button>
-                <button class="button period">.</button>
-                <button class="button highlight2 equals">=</button>  
+            <div class="screen-history" id="history"></div>
+            <div class="screen-buffer" id="input">0</div>   
+            <div class="container-buttons" id="button container">
+                <button class="button highlight1 allclear" id="C">C</button>
+                <button class="button highlight1 plusminus" id="plusmn">+/-</button>
+                <button class="button highlight1 percentage operator modulus" id="modulus">%</button>
+                <button class="button highlight2 divide operator" id="divide">÷</button>
+                <button class="button button7 digit">7</button>
+                <button class="button button8 digit">8</button>
+                <button class="button button9 digit">9</button>
+                <button class="button highlight2 multiply operator" id="multiply">×</button>
+                <button class="button button4 digit">4</button>
+                <button class="button button5 digit">5</button>
+                <button class="button button6 digit">6</button>
+                <button class="button highlight2 minus operator" id="minus">-</button>
+                <button class="button button1 digit">1</button>
+                <button class="button button2 digit">2</button>
+                <button class="button button3 digit">3</button>
+                <button class="button highlight2 plus operator" id="plus">+</button>
+                <button class="button backspace" id="CE">←</button>
+                <button class="button button0 digit">0</button>
+                <button class="button period" id="decimal">.</button>
+                <button class="button highlight2 equals" id="equals">=</button>  
             </div>
         </div>  
 	<script src="index.js"></script>
