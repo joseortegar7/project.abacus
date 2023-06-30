@@ -111,18 +111,22 @@ body {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  cursor: pointer;
 }
-.material-symbols-outlined:hover {
+
+.lights-on {
     font-variation-settings:
     'FILL' 0,
     'wght' 400,
     'GRAD' 0,
     'opsz' 48;
     color: white;
-    background-color: rgb(69, 78, 91);
+    background-color:#2b2d34;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    cursor: pointer;
+    
   }
+.lights-off {
+    color: rgb(176, 176, 161);
+    cursor: pointer;
+}
