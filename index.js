@@ -1,338 +1,259 @@
-//Darkmode functionality begins here.
-const lightsOff = document.querySelector(".lights-off");
-const lightsOn = document.querySelector(".lights-on");
-const theme = document.querySelector("#theme-link");
+// --- Theme Toggler ---
+const themeToggle = document.getElementById('theme-toggle-checkbox');
 
-lightsOff.addEventListener("click", function() {
-  if (theme.getAttribute("href") == "style-lightmode.css") {
-    theme.href = "style-darkmode.css";
+themeToggle.addEventListener('change', function() {
+  if (this.checked) {
+    document.body.classList.add('dark-mode');
+  } else {
+    document.body.classList.remove('dark-mode');
   }
 });
 
-lightsOn.addEventListener("click", function() {
-  if (theme.getAttribute("href") == "style-darkmode.css") {
-    theme.href = "style-lightmode.css";
+// --- Calculator Class (The "Engine") ---
+class Calculator {
+    constructor(historyElement, inputElement) {
+        this.historyElement = historyElement;
+        this.inputElement = inputElement;
+        this.calculationHistory = [];
+        this.clear();
+    }
+
+    clear() {
+        this.currentOperand = '0';
+        this.previousOperand = '';
+        this.operation = undefined;
+        this.updateDisplay();
+    }
+
+    delete() {
+        if (this.currentOperand === 'Error') { this.clear(); return; }
+        if (this.currentOperand.length > 1) {
+             this.currentOperand = this.currentOperand.toString().slice(0, -1);
+        } else {
+            this.currentOperand = '0';
+        }
+        this.updateDisplay();
+    }
+
+    appendNumber(number) {
+        const currentDigits = this.currentOperand.replace('.', '');
+        if (currentDigits.length >= 12) return; 
+
+        if (number === '.' && this.currentOperand.includes('.')) return;
+        
+        if (this.currentOperand === '0' && number !== '.') {
+            this.currentOperand = number.toString();
+        } else {
+            this.currentOperand = this.currentOperand.toString() + number.toString();
+        }
+        
+        this.updateDisplay();
+    }
+
+    chooseOperation(operation) {
+        if (this.currentOperand === 'Error') return;
+        if (this.currentOperand === '' && this.previousOperand === '') return;
+        if (this.previousOperand !== '' && this.currentOperand !== '') {
+            this.compute();
+        }
+
+        this.operation = operation;
+        this.previousOperand = this.currentOperand;
+        this.currentOperand = '';
+        this.updateDisplay();
+    }
+
+    compute() {
+        let computation;
+        const prev = parseFloat(this.previousOperand);
+        const current = parseFloat(this.currentOperand);
+
+        if (isNaN(prev) || isNaN(current)) return;
+
+        const fullCalculation = `${this.getDisplayNumber(this.previousOperand)} ${this.operation} ${this.getDisplayNumber(current)}`;
+
+        switch (this.operation) {
+            case '+': computation = prev + current; break;
+            case '-': computation = prev - current; break;
+            case '×': computation = prev * current; break;
+            case '÷': 
+                if(current === 0) {
+                    this.currentOperand = "Error";
+                    this.previousOperand = '';
+                    this.operation = undefined;
+                    this.updateDisplay();
+                    return;
+                }
+                computation = prev / current; 
+                break;
+            case '%': computation = prev % current; break;
+            default: return;
+        }
+
+        const limit = 999999999999;
+        if (Math.abs(computation) > limit) {
+            this.currentOperand = computation.toExponential(4);
+        } else {
+            this.currentOperand = computation.toString();
+        }
+        
+        this.saveToHistory(`${fullCalculation} = ${this.getDisplayNumber(this.currentOperand)}`);
+        
+        this.operation = undefined;
+        this.previousOperand = '';
+        this.updateDisplay();
+    }
+    
+    saveToHistory(calculation) {
+        this.calculationHistory.unshift(calculation);
+        if (this.calculationHistory.length > 20) { this.calculationHistory.pop(); }
+    }
+    
+    toggleSign() {
+        if (this.currentOperand === '' || this.currentOperand === '0') return;
+        const num = parseFloat(this.currentOperand);
+        this.currentOperand = (num * -1).toString();
+        this.updateDisplay();
+    }
+
+    getDisplayNumber(number) {
+        if (number === 'Error') return 'Error';
+        if (number === null || number === undefined || number === '') return '0';
+        const stringNumber = number.toString();
+        if (stringNumber.includes('e')) { return stringNumber; }
+        const integerDigits = parseFloat(stringNumber.split('.')[0]);
+        const decimalDigits = stringNumber.split('.')[1];
+        let integerDisplay;
+        if (isNaN(integerDigits)) { integerDisplay = ''; } 
+        else { integerDisplay = integerDigits.toLocaleString('en-US', { maximumFractionDigits: 0 }); }
+        if (decimalDigits != null) { return `${integerDisplay}.${decimalDigits}`; } 
+        else { return integerDisplay; }
+    }
+
+    updateDisplay() {
+        this.inputElement.innerText = this.getDisplayNumber(this.currentOperand);
+        if (this.operation != null) {
+            this.historyElement.innerText = `${this.getDisplayNumber(this.previousOperand)} ${this.operation}`;
+        } else {
+            this.historyElement.innerText = '';
+        }
+        this.adjustFontSize();
+    }
+
+    adjustFontSize() {
+        const inputDisplay = this.inputElement;
+        const numberLength = inputDisplay.innerText.length;
+        if (numberLength > 13) { inputDisplay.style.fontSize = "2.4rem"; } 
+        else if (numberLength > 10) { inputDisplay.style.fontSize = "2.8rem"; } 
+        else if (numberLength > 8) { inputDisplay.style.fontSize = "3.4rem"; } 
+        else if (numberLength > 6) { inputDisplay.style.fontSize = "4.0rem"; } 
+        else { inputDisplay.style.fontSize = "4.5rem"; }
+    }
+}
+
+
+// --- DOM Element Selection & Event Listeners ---
+const digitButtons = document.querySelectorAll('.digit');
+const operatorButtons = document.querySelectorAll('.operator');
+const equalsButton = document.getElementById('equals');
+const clearButton = document.getElementById('C');
+const backspaceButton = document.getElementById('CE');
+const plusmnButton = document.getElementById('plusmn');
+const decimalButton = document.getElementById('decimal');
+const historyElement = document.getElementById('history');
+const inputElement = document.getElementById('input');
+const copyDisplayBtn = document.getElementById('copy-display-btn'); // <-- ADDED
+
+const calculator = new Calculator(historyElement, inputElement);
+
+digitButtons.forEach(button => { button.addEventListener('click', () => { calculator.appendNumber(button.innerText); }); });
+operatorButtons.forEach(button => { button.addEventListener('click', () => { calculator.chooseOperation(button.innerText); }); });
+decimalButton.addEventListener('click', () => { calculator.appendNumber('.'); });
+equalsButton.addEventListener('click', button => { calculator.compute(); });
+clearButton.addEventListener('click', button => { calculator.clear(); });
+backspaceButton.addEventListener('click', button => { calculator.delete(); });
+plusmnButton.addEventListener('click', button => { calculator.toggleSign(); });
+
+// --- ADDED: Event listener for the main display copy button ---
+copyDisplayBtn.addEventListener('click', () => {
+  const textToCopy = calculator.currentOperand;
+
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    copyDisplayBtn.textContent = 'done';
+    copyDisplayBtn.classList.add('copied');
+    
+    setTimeout(() => {
+      copyDisplayBtn.textContent = 'content_copy';
+      copyDisplayBtn.classList.remove('copied');
+    }, 2000);
+  }).catch(err => {
+    console.error('Failed to copy text: ', err);
+  });
+});
+
+
+// --- History Modal Logic ---
+const historyBtn = document.getElementById('history-btn');
+const historyModal = document.getElementById('history-modal');
+const closeModalBtn = document.getElementById('close-modal-btn');
+const historyList = document.getElementById('history-list');
+
+function showHistory() {
+  historyList.innerHTML = '';
+  const calculations = calculator.calculationHistory;
+
+  if (calculations.length === 0) {
+    historyList.innerHTML = '<li>No history yet.</li>';
+  } else {
+    calculations.forEach(calc => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="history-text">${calc}</span>
+        <button class="copy-btn material-symbols-outlined">content_copy</button>
+      `;
+      historyList.appendChild(li);
+    });
+  }
+  
+  historyModal.style.display = 'block';
+}
+
+function closeHistory() { historyModal.style.display = 'none'; }
+
+historyBtn.addEventListener('click', showHistory);
+closeModalBtn.addEventListener('click', closeHistory);
+window.addEventListener('click', (event) => { if (event.target == historyModal) { closeHistory(); }});
+
+historyList.addEventListener('click', function(event) {
+  if (event.target.classList.contains('copy-btn')) {
+    const copyBtn = event.target;
+    const textToCopy = copyBtn.previousElementSibling.textContent;
+
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      copyBtn.textContent = 'done';
+      copyBtn.classList.add('copied');
+      
+      setTimeout(() => {
+        copyBtn.textContent = 'content_copy';
+        copyBtn.classList.remove('copied');
+      }, 2000);
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+    });
   }
 });
 
-//Darkmode funtionality ends here
 
-
-
-
-let input = document.getElementById("input");
-let history = document.getElementById("history");
-let clear = document.getElementById("C");
-let clearE = document.getElementById("CE");
-let digits = document.getElementsByClassName("digit");
-let operators = document.getElementsByClassName("operator");
-let plusmn = document.getElementById("plusmn");
-let equals = document.getElementById("equals");
-let decimal = document.getElementById("decimal");
-
-for (let d of digits) {
-  d.addEventListener("click", pressDigit);
-}
-
-for (let o of operators) {
-  o.addEventListener("click", pressOperator);
-}
-
-clear.addEventListener("click", pressClear);
-clearE.addEventListener("click", pressBackspace);
-plusmn.addEventListener("click", pressPlusmn);
-equals.addEventListener("click", pressEquals);
-decimal.addEventListener("click", pressDecimal);
-
-document.addEventListener("keydown", keydown);
-
-function keydown(e) {
-  if (!isNaN(e.key)) {
-    pressDigit(e.key.toString());
-    return;
-  }
-  switch (e.key) {
-    case "c":
-      pressClear();
-      break;
-    case "Backspace":
-      pressBackspace();
-      break;
-    case ".":
-      pressDecimal();
-      break;
-    case "Enter":
-    case "=":
-      pressEquals();
-      break;
-    case "+":
-      pressOperator("+");
-      break;
-    case "-":
-      pressOperator("-");
-      break;
-    case "*":
-      pressOperator("\xD7");
-      break;
-    case "/":
-      pressOperator("\xF7");
-      break;
-    case "%":
-      pressOperator("%");
-      break;
-  }
-}
-
-function pressDigit(e) {
-  let digit;
-  if (typeof e === "string") {
-    digit = e;
-  } else {
-    digit = e.target.innerText;
-  }
-
-  //if operator was pressed last, reset input
-  if (isHistoryOperator(history.innerText.length - 1) && input.innerText !== "-") {
-    input.innerText = "";
-  }
-
-  if (equalsPressed()) {
-    history.innerText = digit;
-    input.innerText = digit;
-  } else if (isHistoryTooLong() || isInputTooLong()) {
-    return;
-  } else if (input.innerText === "0" || input.innerText === "-0") {
-    history.innerText = history.innerText.slice(0, history.innerText.length - 1) + digit;
-    if (input.innerText === "0") {
-      input.innerText = digit;
-    } else {
-      input.innerText = "-" + digit;
+// --- Keyboard Support ---
+document.addEventListener("keydown", (e) => {
+    if (!isNaN(e.key)) { calculator.appendNumber(e.key); return; }
+    if (e.key === ".") { calculator.appendNumber(e.key); return; }
+    switch (e.key) {
+        case "c": case "C": calculator.clear(); break;
+        case "Backspace": calculator.delete(); break;
+        case "Enter": case "=": calculator.compute(); break;
+        case "+": case "-": case "%": calculator.chooseOperation(e.key); break;
+        case "*": calculator.chooseOperation("×"); break;
+        case "/": calculator.chooseOperation("÷"); break;
     }
-  } else {
-    history.innerText += digit;
-    input.innerText += digit;
-  }
-}
-
-function pressDecimal() {
-  if (equalsPressed() || input.innerText === "") {
-    history.innerText = "0.";
-    input.innerText = "0.";
-    return;
-  }
-  //if operator was pressed last, reset input
-  if (isHistoryOperator(history.innerText.length - 1) && input.innerText !== "-") {
-    input.innerText = "";
-  }
-
-  if (isHistoryTooLong() || isInputTooLong() || input.innerText.includes(".")) {
-    return;
-  } else if (isHistoryOperator(history.innerText.length - 1)) {
-    history.innerText += "0.";
-    input.innerText += "0.";
-  } else if (history.innerText[history.innerText.length - 1] !== ".") {
-    history.innerText += ".";
-    input.innerText += ".";
-  }
-}
-
-function pressOperator(e) {
-  //if history is empty, or two operators have been hit, return
-  let operator = e;
-  if (e === "-" && (isHistoryOperator(history.innerText.length - 1) || history.innerText === "")) {
-    pressPlusmn();
-    return;
-  }
-  if (
-    history.innerText === "" ||
-    input.innerText.search(/[a-z><]/gi) !== -1 ||
-    (isHistoryOperator(history.innerText.length - 1) && isHistoryOperator(history.innerText.length - 2))
-  ) {
-    return;
-  }
-  if (typeof e === "string") {
-    operator = e;
-  } else {
-    operator = e.target.innerText;
-  }
-
-  if (equalsPressed()) {
-    history.innerText = input.innerText + operator;
-  } else if (isHistoryTooLong()) {
-    return;
-  } else if (isHistoryOperator(history.innerText.length - 1)) {
-    history.innerText = history.innerText.slice(0, history.innerText.length - 1) + operator;
-  } else {
-    history.innerText += operator;
-  }
-}
-
-function pressClear() {
-  input.innerText = "";
-  history.innerText = "";
-}
-
-function pressBackspace() {
-  if (history.innerText.search(/[a-z><]/gi) !== -1) {
-    input.innerText = "";
-    history.innerText = "";
-    return;
-  }
-  if (history.innerText === "") {
-    return;
-  }
-  //if operator was not pressed, delete last number from input
-  if ((!isHistoryOperator(history.innerText.length - 1) || input.innerText === "-") && !equalsPressed()) {
-    input.innerText = input.innerText.slice(0, input.innerText.length - 1);
-  } else {
-    input.innerText = lastNoInHistory();
-  }
-
-  history.innerText = history.innerText.slice(0, history.innerText.length - 1);
-}
-
-function pressPlusmn() {
-  if (equalsPressed()) {
-    input.innerText = "-";
-    history.innerText = "-";
-  } else if (isHistoryTooLong() || isInputTooLong()) {
-    return;
-  } else if (history.innerText === "-") {
-    input.innerText = "";
-    history.innerText = "";
-  } else if (isHistoryOperator(history.innerText.length - 1) && !isHistoryOperator(history.innerText.length - 2)) {
-    input.innerText = "-";
-    history.innerText += "-";
-  } else if (!input.innerText.includes("-")) {
-    let hindex = history.innerText.lastIndexOf(input.innerText);
-    input.innerText = "-" + input.innerText;
-    history.innerText = history.innerText.slice(0, hindex) + input.innerText;
-  } else {
-    let hindex = history.innerText.lastIndexOf(input.innerText);
-    input.innerText = input.innerText.slice(1);
-    history.innerText = history.innerText.slice(0, hindex) + input.innerText;
-  }
-}
-
-function pressEquals() {
-  //if equals or an operator was pressed last, or history is empty
-  if (
-    isHistoryOperator(history.innerText.length - 1) ||
-    history.innerText[history.innerText.length - 1] === "=" ||
-    history.innerText === ""
-  ) {
-    return;
-  }
-
-  let numbersArray = history.innerText.split(/[^0-9.]+/g).filter(i => i !== "");
-  numbersArray = numbersArray.map(i => Number(i));
-  let operatorsArray = history.innerText.split(/[0-9.]+/g).filter(op => op !== "");
-
-  if (history.innerText[0] === "-") {
-    //fix arrays if first number is negative
-    numbersArray[0] = -numbersArray[0];
-    operatorsArray.shift();
-  }
-
-  history.innerText += "=";
-  input.innerText = evaluate(numbersArray, operatorsArray).toString();
-}
-
-function evaluate(numbersArray, operatorsArray) {
-  for (let i = 0; i < operatorsArray.length; i++) {
-    if (operatorsArray[i][0] === "\xF7" || operatorsArray[i][0] === "\xD7" || operatorsArray[i][0] === "%") {
-      let evaluation = simpleEval(numbersArray[i], numbersArray[i + 1], operatorsArray[i]);
-      numbersArray.splice(i, 2, evaluation);
-      operatorsArray.splice(i, 1);
-      i--;
-    }
-  }
-
-  for (let i = 0; i < operatorsArray.length; i++) {
-    let evaluation = simpleEval(numbersArray[i], numbersArray[i + 1], operatorsArray[i]);
-    numbersArray.splice(i, 2, evaluation);
-    operatorsArray.splice(i, 1);
-    i--;
-  }
-
-  return output(numbersArray[0]);
-
-  function simpleEval(a, b, operation) {
-    switch (operation) {
-      case "+":
-        return a + b;
-      case "-":
-        return a - b;
-      case "\xF7":
-        return a / b;
-      case "\xD7":
-        return a * b;
-      case "%":
-        return a % b;
-      case "+-":
-        return a - b;
-      case "--":
-        return a + b;
-      case "\xF7-":
-        return a / -b;
-      case "\xD7-":
-        return a * -b;
-      case "%-":
-        return a % -b;
-      default:
-        console.error("Evaluation cannot be completed");
-        return;
-    }
-  }
-
-  function output(n) {
-    if (Math.abs(n) < 1) {
-      return Number(n.toPrecision(8)).toString();
-    } else if (n > 9999999999 && Math.abs(n) !== Infinity) {
-      return ">9999999999";
-    } else if (n < -999999999 && Math.abs(n) !== Infinity) {
-      return "<-999999999";
-    } else if (
-      !Number(n.toPrecision(9))
-        .toString()
-        .includes(".")
-    ) {
-      return Number(n.toPrecision(10)).toString();
-    }
-    return Number(n.toPrecision(9)).toString();
-  }
-}
-function isHistoryOperator(i) {
-  return (
-    history.innerText[i] === "%" ||
-    history.innerText[i] === "+" ||
-    history.innerText[i] === "\xF7" ||
-    history.innerText[i] === "\xD7" ||
-    history.innerText[i] === "-"
-  );
-}
-
-function equalsPressed() {
-  return history.innerText[history.innerText.length - 1] === "=" || history.innerText === "";
-}
-
-function isHistoryTooLong() {
-  return history.innerText.length > 20;
-}
-
-function isInputTooLong() {
-  return input.innerText.length >= 7;
-}
-
-function lastNoInHistory() {
-  let number = history.innerText
-    .split(/[^0-9.]+/g)
-    .filter(i => i !== "")
-    .pop();
-
-  if (history.innerText.endsWith("-" + number, history.innerText.length - 1)) {
-    number = "-" + number;
-  }
-
-  return number;
-}
+});

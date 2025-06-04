@@ -1,0 +1,259 @@
+/* =================================== */
+/* MAIN LAYOUT & STRUCTURE (Default Light Theme) */
+/* =================================== */
+
+body {
+    display: grid;
+    margin: 0;
+    padding: 20px 100px;
+    background-color: #e8e8e8;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.container-calc {
+    display: grid;
+    background-color: #ffffff;
+    grid-template-columns: 1fr;
+    width:350px;
+    height: 700px;
+    border-radius: 20px;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+    align-content: space-between;
+    justify-items: center;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: center; /* This centers the theme-switch */
+  align-items: center;
+  position: relative; /* Context for absolute positioned children */
+  width: 100%;
+  padding: 20px 0;
+}
+
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+.slider-icon {
+  font-family: 'Material Symbols Outlined';
+  position: absolute;
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.sun { color: #f39c12; opacity: 1; }
+.moon { color: #34495e; opacity: 0; }
+
+input:checked + .slider {
+  background-color: #2c3e50;
+}
+input:checked + .slider .slider-icon {
+  transform: translateX(26px);
+}
+input:checked + .slider .sun { opacity: 0; }
+input:checked + .slider .moon { opacity: 1; }
+
+.screen-container {
+  position: relative; /* Still useful if you wanted overlays IN the screen, but not for this button now */
+}
+
+.screen-history {
+    display: block; color: rgb(150, 150, 150); height: 125px; 
+    width: 320px; font-size: 40px; font-family: 'Rubik', sans-serif;
+    text-align: right; padding-top: 65px; line-height: 40px;
+}
+
+.screen-buffer {
+    display: block; 
+    color: black; 
+    height: 125px; 
+    width: 320px;
+    font-size: 4.5rem; 
+    font-family: 'Rubik', sans-serif; 
+    text-align: right;
+    padding-top: 0; 
+    line-height: 140px; 
+    word-wrap: break-word; 
+    word-break: break-all;
+    /* --- REMOVED padding-right and box-sizing --- */
+}
+
+/* --- MODIFIED: copy-display-btn is now positioned in the top-bar --- */
+#copy-display-btn {
+  position: absolute;
+  top: 15px; /* Align with history-btn's top */
+  left: 20px; /* Position in the top-left corner */
+  width: 50px;   /* Match history-btn size */
+  height: 50px;  /* Match history-btn size */
+  font-size: 28px; /* Match history-btn icon size */
+  background: none;
+  border: none;
+  color: #a9a9a9; /* Match history-btn color */
+  cursor: pointer;
+  padding: 0; /* Remove padding if using width/height for icon container */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Material Symbols Outlined';
+  /* z-index is no longer needed as it's not overlapping screen text */
+}
+#copy-display-btn:hover {
+  color: #333; /* Match history-btn hover color */
+}
+#copy-display-btn.copied {
+  color: #27ae60;
+}
+
+.container-buttons {
+    display: grid; box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+    grid-template-columns: 1fr 1fr 1fr 1fr; justify-items: center;
+    background-color: #f9f9f9; width: 350px; height: 350px;
+    border-radius: 20px; align-content: space-evenly;
+    padding: 10px 0 30px 0; row-gap: 10px;
+}
+
+.button {
+    color: black; background-color: #f7f7f7; height: 55px;
+    width: 55px; border-radius: 15px; border: none; font-size: large;
+    font-weight: bolder; font-family: 'Rubik', sans-serif;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 0.2); cursor: pointer;
+    transition: transform 0.1s ease;
+     -webkit-user-select: none; 
+    -ms-user-select: none;     
+    user-select: none;         
+}
+.button.highlight1 { color:rgb(22, 160, 133); }
+.button.highlight2 { color:rgb(231, 76, 60); }
+.button:hover { background-color: rgb(200, 200, 200); }
+.button:active {
+    box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.2);
+    transform: scale(0.95);
+}
+
+#history-btn {
+  position: absolute; top: 15px; right: 20px;
+  width: 50px; height: 50px; color: #a9a9a9;
+  font-family: 'Material Symbols Outlined'; border: none; background: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 28px;
+}
+#history-btn:hover { color: #333; }
+
+
+/* =================================== */
+/* DARK MODE THEME OVERRIDES          */
+/* =================================== */
+
+body.dark-mode { background-color: #474952; }
+body.dark-mode .container-calc,
+body.dark-mode .container-buttons { background-color: #2a2d35; }
+
+body.dark-mode .screen-buffer,
+body.dark-mode .button { color: white; }
+
+body.dark-mode .button { background-color: #282b32; }
+body.dark-mode .button.highlight1 { color:rgb(98, 235, 189); }
+body.dark-mode .button.highlight2 { color:rgb(255, 99, 71); }
+body.dark-mode .button:hover { background-color: rgb(69, 78, 91); }
+
+body.dark-mode #history-btn { color: #8c8c8c; }
+body.dark-mode #history-btn:hover { color: #f1f1f1; }
+
+/* --- MODIFIED: Dark mode for the copy-display-btn --- */
+body.dark-mode #copy-display-btn { color: #8c8c8c; } /* Match history-btn color */
+body.dark-mode #copy-display-btn:hover { color: #f1f1f1; } /* Match history-btn hover */
+body.dark-mode #copy-display-btn.copied { color: #2ecc71; }
+
+/* =================================== */
+/* HISTORY MODAL STYLES               */
+/* =================================== */
+
+.history-modal {
+  display: none; position: fixed; z-index: 10;
+  left: 0; top: 0; width: 100%; height: 100%;
+  overflow: auto; background-color: rgba(0,0,0,0.5);
+  font-family: 'Rubik', sans-serif;
+}
+
+.modal-content {
+  background-color: #fefefe; color: #333;
+  margin: 15% auto; padding: 20px;
+  border: 1px solid #888; width: 80%; max-width: 400px;
+  border-radius: 10px; position: relative;
+}
+
+.close-btn {
+  color: #aaa; position: absolute; top: 10px; right: 20px;
+  font-size: 28px; font-weight: bold; cursor: pointer;
+}
+.close-btn:hover, .close-btn:focus { color: black; }
+
+#history-list {
+  list-style-type: none; padding: 0; max-height: 300px; overflow-y: auto;
+}
+
+#history-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px; 
+  border-bottom: 1px solid #ddd; 
+  font-size: 1.2rem;
+}
+#history-list li:last-child { border-bottom: none; }
+
+.copy-btn {
+  font-family: 'Material Symbols Outlined';
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  color: #888;
+  font-size: 20px;
+  transition: background-color 0.2s;
+}
+.copy-btn:hover { background-color: #e9e9e9; }
+.copy-btn.copied { color: #27ae60; }
+
+
+/* Dark mode styles for the modal */
+body.dark-mode .modal-content {
+  background-color: #3b3e47; color: #f1f1f1;
+}
+body.dark-mode .close-btn:hover, 
+body.dark-mode .close-btn:focus { color: white; }
+
+body.dark-mode #history-list li {
+  border-bottom-color: #555;
+}
+body.dark-mode .copy-btn { color: #777; }
+body.dark-mode .copy-btn:hover { background-color: #4f535e; }
+body.dark-mode .copy-btn.copied { color: #2ecc71; }
